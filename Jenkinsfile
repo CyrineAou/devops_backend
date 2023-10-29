@@ -2,48 +2,30 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout and Build Backend') {
+        stage('Checkout Git Repositories') {
             steps {
-                script {
-                    retry(3) {
-                        // Checkout the backend repository
-                        checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_BACKEND_REPO']]])
+                // Checkout first Git repository
+                git(
+                    url: 'https://github.com/CyrineAou/devops_frontend.git',
+                    branch: 'main'
+                )
 
-                        // Build the backend project
-                        sh 'mvn clean install' // Or your build command
-                    }
-                }
+                // Checkout second Git repository
+                git(
+                    url: 'https://github.com/CyrineAou/devops_backend.git',
+                    branch: 'main'
+                )
+
+
             }
         }
 
-        stage('Checkout and Build Frontend') {
+        stage('Build') {
             steps {
-                script {
-                    retry(3) {
-                        // Clean the workspace to avoid conflicts
-                        deleteDir()
-
-                        // Checkout the frontend repository
-                        checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_FRONTEND_REPO']]])
-
-                        // Build the frontend project
-                        sh 'npm install' // Install frontend dependencies
-                        sh 'ng build --prod' // Build the frontend (Angular in this example)
-                    }
-                }
+                // Perform build steps here
             }
         }
 
-        stage('Deploy') {
-            steps {
-                // Your deployment steps for both backend and frontend
-            }
-        }
-    }
-
-    post {
-        always {
-            // Post-build actions
-        }
+        // Add more stages as needed
     }
 }
