@@ -9,15 +9,18 @@ pipeline {
         }
         stage('Build Backend') {
             steps {
-                sh 'mvn package'
+                dir('backend') {
+                    sh 'mvn package'
+                }
             }
         }
         stage('Build Frontend') {
             steps {
-                sh 'npm install'
-                sh 'ng build'
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'ng build'
+                }
             }
         }
     }
 }
-
