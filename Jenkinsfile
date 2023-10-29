@@ -4,25 +4,33 @@ pipeline {
     stages {
         stage('Checkout and Build Backend') {
             steps {
-                // Checkout the backend repository
-                checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_BACKEND_REPO']]])
+                script {
+                    retry(3) {
+                        // Checkout the backend repository
+                        checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_BACKEND_REPO']]])
 
-                // Build the backend project
-                sh 'mvn clean install' // Or your build command
+                        // Build the backend project
+                        sh 'mvn clean install' // Or your build command
+                    }
+                }
             }
         }
 
         stage('Checkout and Build Frontend') {
             steps {
-                // Clean the workspace to avoid conflicts
-                deleteDir()
+                script {
+                    retry(3) {
+                        // Clean the workspace to avoid conflicts
+                        deleteDir()
 
-                // Checkout the frontend repository
-                checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_FRONTEND_REPO']])
+                        // Checkout the frontend repository
+                        checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'URL_TO_FRONTEND_REPO']]])
 
-                // Build the frontend project
-                sh 'npm install' // Install frontend dependencies
-                sh 'ng build --prod' // Build the frontend (Angular in this example)
+                        // Build the frontend project
+                        sh 'npm install' // Install frontend dependencies
+                        sh 'ng build --prod' // Build the frontend (Angular in this example)
+                    }
+                }
             }
         }
 
