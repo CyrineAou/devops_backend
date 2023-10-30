@@ -2,30 +2,28 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Git Repositories') {
+        stage('Checkout and Build Backend') {
             steps {
-                // Checkout first Git repository
-                git(
-                    url: 'https://github.com/CyrineAou/devops_frontend.git',
-                    branch: 'main'
-                )
+                // Checkout the backend repository
+                checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/CyrineAou/devops_backend.git']]])
 
-                // Checkout second Git repository
-                git(
-                    url: 'https://github.com/CyrineAou/devops_backend.git',
-                    branch: 'main'
-                )
-
-
+                // Build the backend project
+                sh 'mvn clean install' // Or your build command
             }
         }
 
-        stage('Build') {
+        stage('Checkout and Build Frontend') {
             steps {
-                // Perform build steps here
+                // Clean the workspace to avoid conflicts
+                deleteDir()
+
+                // Checkout the frontend repository
+                checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/CyrineAou/devops_frontend.git']])
+
+                // Build the frontend project
+                sh 'npm install' // Install frontend dependencies
+                sh 'ng build --prod' // Build the frontend (Angular in this example)
             }
         }
-
-        // Add more stages as needed
     }
 }
