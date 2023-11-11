@@ -29,4 +29,7 @@ services:
     depends_on:
       - spring
 
+volumes:
+  mysql_data:
+
 
