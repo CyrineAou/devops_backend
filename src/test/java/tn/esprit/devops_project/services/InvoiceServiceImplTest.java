@@ -6,15 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import tn.esprit.devops_project.entities.Invoice;
-import tn.esprit.devops_project.entities.Operator;
 import tn.esprit.devops_project.entities.Supplier;
 import tn.esprit.devops_project.repositories.InvoiceRepository;
-import tn.esprit.devops_project.repositories.OperatorRepository;
 import tn.esprit.devops_project.repositories.SupplierRepository;
-import tn.esprit.devops_project.services.InvoiceServiceImpl;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +18,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
 
 //@SpringBootTest
 //@SpringJUnitConfig
@@ -91,4 +85,16 @@ class InvoiceServiceImplTest {
         float totalAmount = invoiceService.getTotalAmountInvoiceBetweenDates(new Date(), new Date());
         assertEquals(500.0, totalAmount);
     }
+
+
+    @Test
+    void assignOperatorToInvoice() {
+        Invoice mockInvoice = new Invoice(1L, 100.0f, 200.0f, new Date(), new Date(), false, null, null);
+        when(invoiceRepository.findById(1L)).thenReturn(Optional.of(mockInvoice));
+        when(invoiceRepository.save(mockInvoice)).thenReturn(mockInvoice);
+        invoiceService.cancelInvoice(1L);
+        assertTrue(mockInvoice.getArchived());
+
+    }
 }
+
